@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Ethereum private network - docker containerized</title>
+<!-- 2017-11-22 Wed 20:17 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Gary Gu" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Ethereum private network - docker containerized</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Introduction</a></li>
+<li><a href="#sec-2">2. Get the docker image and checkout the scripts from github</a></li>
+<li><a href="#sec-3">3. Start a docker network and bring up the genesis block</a></li>
+<li><a href="#sec-4">4. Start two regular non-minor nodes so that can discover each other</a></li>
+<li><a href="#sec-5">5. Start a minor node to complete the 3 node network</a></li>
+<li><a href="#sec-6">6. Verify that the 3 nodes each one another</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+This note logs what I did as I read and followed along this great Medium article <a href="https://medium.com/@andrenit/buildind-an-ethereum-playground-with-docker-part-2-docker-image-928f8ceaac50">https://medium.com/@andrenit/buildind-an-ethereum-playground-with-docker-part-2-docker-image-928f8ceaac50</a> to start a private ethereum network up and running on my macBook Pro.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Get the docker image and checkout the scripts from github</h2>
+<div class="outline-text-2" id="text-2">
+<pre class="example">
+bash-3.2$ docker images | grep vertigo
+vertigo/ethereum    latest              a99bd63d4f4b        4 months ago        196MB
+bash-3.2$ 
+
+ /Users/gug/ethereum:
+  total used in directory 672 available 4293134459
+  drwxr-xr-x   31 gug  staff    1054 Nov 22 19:35 .
+  drwxr-xr-x+ 100 gug  staff    3400 Nov 22 16:50 ..
+  -rw-r--r--    1 gug  staff      60 Nov 21 14:19 .IMGNAME
+  -rw-r--r--    1 gug  staff     110 Nov 21 14:19 .IMGVERSION
+  -rw-r--r--    1 gug  staff      19 Nov 21 14:19 .dockerignore
+  drwxr-xr-x   13 gug  staff     442 Nov 22 16:03 .git
+  -rw-r--r--    1 gug  staff      30 Nov 21 14:19 .gitignore
+  -rw-r--r--    1 gug  staff     488 Nov 21 14:19 Dockerfile
+  -rw-r--r--    1 gug  staff    5401 Nov 21 14:19 LEIAME.md
+  -rw-r--r--    1 gug  staff    5225 Nov 21 14:19 README.md
+  drwxr-xr-x    5 gug  staff     170 Nov 21 14:19 azure
+  -rwxr-xr-x    1 gug  staff     676 Nov 21 14:19 bootnode.sh
+  -rwxr-xr-x    1 gug  staff     514 Nov 21 14:19 build.sh
+  -rwxr-xr-x    1 gug  staff     122 Nov 21 14:19 getbootnodeurl.sh
+  -rwxr-xr-x    1 gug  staff      99 Nov 21 14:19 killall.sh
+  -rwxr-xr-x    1 gug  staff     194 Nov 21 14:19 killnode.sh
+  -rw-r--r--    1 gug  staff  247697 Nov 22 16:50 log0
+  -rw-r--r--    1 gug  staff    3167 Nov 22 19:29 log1
+  -rw-r--r--    1 gug  staff     715 Nov 21 14:19 parameters.json
+  -rwxr-xr-x    1 gug  staff     404 Nov 21 14:19 runbash.sh
+  -rwxr-xr-x    1 gug  staff      85 Nov 21 14:19 runconsole.sh
+  -rwxr-xr-x    1 gug  staff     200 Nov 21 14:19 runminer.sh
+  -rwxr-xr-x    1 gug  staff    1120 Nov 21 14:19 runnode.sh
+  -rw-r--r--    1 gug  staff    1340 Nov 21 14:19 setenv.sh.template
+  -rwxr-xr-x    1 gug  staff     106 Nov 21 14:19 showpeers.sh
+  drwxr-xr-x    4 gug  staff     136 Nov 21 14:19 src
+  -rwxr-xr-x    1 gug  staff     258 Nov 21 14:19 wipeall.sh
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Start a docker network and bring up the genesis block</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Also note the datastore ./. and check the enode
+</p>
+<pre class="example">
+bash-3.2$ docker network create ethereum
+f39c0accea6617841a42e52db5f463d8acd5a43a3399258feb5571ab6bbfda67
+bash-3.2$ ./bootnode.sh 
+ethereum-bootnode
+ethereum-bootnode
+04c2db0a90ee657c947246814db6385158c6bc0bff0dea69b7bfccc60c63269b
+bash-3.2$ docker ps -a
+CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS              PORTS                                                  NAMES
+04c2db0a90ee        vertigo/ethereum:latest   "/opt/startgeth.sh..."   12 seconds ago      Up 12 seconds       8545/tcp, 30301/tcp, 30301/udp, 30303/tcp, 30303/udp   ethereum-bootnode
+bash-3.2$ 
+
+/Users/gug/ethereum:
+  total used in directory 672 available 4293134459
+  drwxr-xr-x   31 gug  staff    1054 Nov 22 19:35 .
+  drwxr-xr-x+ 100 gug  staff    3400 Nov 22 16:50 ..
+  drwxr-xr-x@   3 gug  staff     102 Nov 22 19:31 .bootnode  &lt;&lt;======
+
+bash-3.2$ ./getbootnodeurl.sh 
+enode://816f411811fc944fc29bb3df476e53a4e6ead25267ad3173ad5c984d835cd575600f8ac25376b631d40e7553b2c45c92af9dbc008845241888a142e1083e5fb3@172.19.0.2:30301
+bash-3.2$
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Start two regular non-minor nodes so that can discover each other</h2>
+<div class="outline-text-2" id="text-4">
+<pre class="example">
+bash-3.2$ ./runnode.sh node1
+Destroying old container ethereum-node1...
+Error response from daemon: No such container: ethereum-node1
+Error response from daemon: No such container: ethereum-node1
+Running new container ethereum-node1...
+e33a5ef0cbf43ab4c1541de636f4d58e1ca6bec3529246f9e59a1a2415a58b59
+bash-3.2$ 
+
+bash-3.2$ ./runnode.sh node2
+Destroying old container ethereum-node2...
+Error response from daemon: No such container: ethereum-node2
+Error response from daemon: No such container: ethereum-node2
+Running new container ethereum-node2...
+06d72c6d4fa09390bc7956facc93c4a2a010a1954220aafe6a4e91efc9b93bf8
+bash-3.2$
+
+bash-3.2$ ./showpeers.sh ethereum-node1
+[{
+    caps: ["eth/63"],
+    id: "2e0b3e1c1f8689eea548ec4dd0edd790d7fbee992934e67cfd73270df21023d1e0193ef22dce0eae99fd58a906d634cc95eb9ea533fca6dad2fc72740bbb035f",
+    name: "Geth/node2/v1.6.7-stable/linux-amd64/go1.7.3",
+    network: {
+      localAddress: "172.19.0.3:30303",
+      remoteAddress: "172.19.0.4:45210"
+    },
+    protocols: {
+      eth: {
+        difficulty: 1024,
+        head: "0xc39d2cbdf299d5b06fae958cdf036f9495aa84a98c912d409e50d0ca2a103e85",
+        version: 63
+      }
+    }
+}]
+bash-3.2$ ./showpeers.sh ethereum-node2
+[{
+    caps: ["eth/63"],
+    id: "3d43fa4a827807e9ce6b8ccc3adfaf991f3d61b67f4e1dda76aab9584d2d3e2f8482c1c69c6979304f55596f2f01bdc3ccdaffd9a9b591452ef7beafa221715e",
+    name: "Geth/node1/v1.6.7-stable/linux-amd64/go1.7.3",
+    network: {
+      localAddress: "172.19.0.4:45210",
+      remoteAddress: "172.19.0.3:30303"
+    },
+    protocols: {
+      eth: {
+        difficulty: 1024,
+        head: "0xc39d2cbdf299d5b06fae958cdf036f9495aa84a98c912d409e50d0ca2a103e85",
+        version: 63
+      }
+    }
+}]
+bash-3.2$
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Start a minor node to complete the 3 node network</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+aside from the root node
+</p>
+<pre class="example">
+bash-3.2$ ./runminer.sh miner1
+Destroying old container ethereum-miner1...
+Error response from daemon: No such container: ethereum-miner1
+Error response from daemon: No such container: ethereum-miner1
+Running new container ethereum-miner1...
+e0908c23dc47652e215090f61ec8ec7211e3fbd3535f85eb332faba4a351ecd1
+bash-3.2$ docker ps -a
+CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS              PORTS                                                  NAMES
+e0908c23dc47        vertigo/ethereum:latest   "/opt/startgeth.sh..."   41 minutes ago      Up 41 minutes       8545/tcp, 30301/tcp, 30301/udp, 30303/tcp, 30303/udp   ethereum-miner1
+06d72c6d4fa0        vertigo/ethereum:latest   "/opt/startgeth.sh..."   42 minutes ago      Up 42 minutes       8545/tcp, 30301/tcp, 30301/udp, 30303/tcp, 30303/udp   ethereum-node2
+e33a5ef0cbf4        vertigo/ethereum:latest   "/opt/startgeth.sh..."   43 minutes ago      Up 43 minutes       8545/tcp, 30301/tcp, 30301/udp, 30303/tcp, 30303/udp   ethereum-node1
+a3115cd2bf83        vertigo/ethereum:latest   "/opt/startgeth.sh..."   45 minutes ago      Up 45 minutes       8545/tcp, 30301/tcp, 30301/udp, 30303/tcp, 30303/udp   ethereum-bootnode
+bash-3.2$ 
+
+ /Users/gug/ethereum:
+  total used in directory 672 available 4293134459
+  drwxr-xr-x   31 gug  staff    1054 Nov 22 19:35 .
+  drwxr-xr-x+ 100 gug  staff    3400 Nov 22 16:50 ..
+  drwxr-xr-x@   3 gug  staff     102 Nov 22 19:31 .bootnode       &lt;&lt;&lt;======
+  drwxr-xr-x@   4 gug  staff     136 Nov 22 19:35 .ether-miner1   &lt;&lt;&lt;======
+  drwxr-xr-x@   3 gug  staff     102 Nov 22 19:33 .ether-node1    &lt;&lt;&lt;======
+  drwxr-xr-x@   3 gug  staff     102 Nov 22 19:34 .ether-node2    &lt;&lt;&lt;======
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Verify that the 3 nodes each one another</h2>
+<div class="outline-text-2" id="text-6">
+<pre class="example">
+bash-3.2$ ./showpeers.sh ethereum-node2
+[{
+    caps: ["eth/63"],
+    id: "3d43fa4a827807e9ce6b8ccc3adfaf991f3d61b67f4e1dda76aab9584d2d3e2f8482c1c69c6979304f55596f2f01bdc3ccdaffd9a9b591452ef7beafa221715e",
+    name: "Geth/node1/v1.6.7-stable/linux-amd64/go1.7.3",
+    network: {
+      localAddress: "172.19.0.4:45210",
+      remoteAddress: "172.19.0.3:30303"
+    },
+    protocols: {
+      eth: {
+        difficulty: 1024,
+        head: "0xc39d2cbdf299d5b06fae958cdf036f9495aa84a98c912d409e50d0ca2a103e85",
+        version: 63
+      }
+    }
+}, {
+    caps: ["eth/63"],
+    id: "fcf9225efb0b72ffe124a942ec72702e493b0e63914b5b57725fa9f5cc4b0d8995619d84d3df9472fc17c662a41ec7837e8d43980cf7770e1eac5e3d241ea0e6",
+    name: "Geth/miner1/v1.6.7-stable/linux-amd64/go1.7.3",
+    network: {
+      localAddress: "172.19.0.4:30303",
+      remoteAddress: "172.19.0.5:43514"
+    },
+    protocols: {
+      eth: {
+        difficulty: 1024,
+        head: "0xc39d2cbdf299d5b06fae958cdf036f9495aa84a98c912d409e50d0ca2a103e85",
+        version: 63
+      }
+    }
+}]
+bash-3.2$ ./showpeers.sh ethereum-node1
+[{
+    caps: ["eth/63"],
+    id: "2e0b3e1c1f8689eea548ec4dd0edd790d7fbee992934e67cfd73270df21023d1e0193ef22dce0eae99fd58a906d634cc95eb9ea533fca6dad2fc72740bbb035f",
+    name: "Geth/node2/v1.6.7-stable/linux-amd64/go1.7.3",
+    network: {
+      localAddress: "172.19.0.3:30303",
+      remoteAddress: "172.19.0.4:45210"
+    },
+    protocols: {
+      eth: {
+        difficulty: 1024,
+        head: "0xc39d2cbdf299d5b06fae958cdf036f9495aa84a98c912d409e50d0ca2a103e85",
+        version: 63
+      }
+    }
+}, {
+    caps: ["eth/63"],
+    id: "fcf9225efb0b72ffe124a942ec72702e493b0e63914b5b57725fa9f5cc4b0d8995619d84d3df9472fc17c662a41ec7837e8d43980cf7770e1eac5e3d241ea0e6",
+    name: "Geth/miner1/v1.6.7-stable/linux-amd64/go1.7.3",
+    network: {
+      localAddress: "172.19.0.3:45102",
+      remoteAddress: "172.19.0.5:30303"
+    },
+    protocols: {
+      eth: {
+        difficulty: 263168,
+        head: "0x23819d45d17117377328816901e7af655c1fae8fcf44988392655f64e00f1779",
+        version: 63
+      }
+    }
+}]
+bash-3.2$ ./showpeers.sh ethereum-miner1
+[{
+    caps: ["eth/63"],
+    id: "2e0b3e1c1f8689eea548ec4dd0edd790d7fbee992934e67cfd73270df21023d1e0193ef22dce0eae99fd58a906d634cc95eb9ea533fca6dad2fc72740bbb035f",
+    name: "Geth/node2/v1.6.7-stable/linux-amd64/go1.7.3",
+    network: {
+      localAddress: "172.19.0.5:43514",
+      remoteAddress: "172.19.0.4:30303"
+    },
+    protocols: {
+      eth: {
+        difficulty: 1024,
+        head: "0xc39d2cbdf299d5b06fae958cdf036f9495aa84a98c912d409e50d0ca2a103e85",
+        version: 63
+      }
+    }
+}, {
+    caps: ["eth/63"],
+    id: "3d43fa4a827807e9ce6b8ccc3adfaf991f3d61b67f4e1dda76aab9584d2d3e2f8482c1c69c6979304f55596f2f01bdc3ccdaffd9a9b591452ef7beafa221715e",
+    name: "Geth/node1/v1.6.7-stable/linux-amd64/go1.7.3",
+    network: {
+      localAddress: "172.19.0.5:30303",
+      remoteAddress: "172.19.0.3:45102"
+    },
+    protocols: {
+      eth: {
+        difficulty: 1024,
+        head: "0xc39d2cbdf299d5b06fae958cdf036f9495aa84a98c912d409e50d0ca2a103e85",
+        version: 63
+      }
+    }
+}]
+bash-3.2$
+</pre>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Gary Gu</p>
+<p class="date">Created: 2017-11-22 Wed 20:17</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 25.2.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
